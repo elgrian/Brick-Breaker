@@ -20,13 +20,34 @@ var brickHeight = 20;
 var brickPadding = 10;
 var brickOffsetTop = 30;
 var brickOffsetLeft = 30;
+var brickX = (c*(brickWidth+brickPadding))+brickOffsetLeft;
+var brickY = (r*(brickHeight+brickPadding))+brickOffsetTop;
+var colorArray = ["0095DD", "2244DD", "1155DD"]
 
+
+var rand = myArray[Math.floor(Math.random() * myArray.length)];
 
 var bricks = [];
 for(var c=0; c<brickColumnCount; c++) {
     bricks[c] = [];
     for(var r=0; r<brickRowCount; r++) {
         vricks[c][r] = {x: 0, y: 0};
+    }
+}
+
+
+function drawBricks() {
+    for(var c=0; c<brickColumnCount; c++) {
+        for(var r=0; r<brickRowCount; r++) {
+            bricks[c][r].x = 0;
+            vricks[c][r].y = 0;
+            ctx.beginPath();
+            ctx.rect(0, 0, brickWidth, brickHeight);
+            ctx.fillStyle = rand;
+            ctx.fill();
+            ctx.closePath();
+
+        }
     }
 }
 
