@@ -17,15 +17,7 @@ var brickHeight = 20;
 var brickPadding = 10;
 var brickOffsetTop = 30;
 var brickOffsetLeft = 30;
-
-
-// var colorArray = ["0095DD", "2244DD", "1155DD"];
-// var rand = colorArray[Math.floor(Math.random() * myArray.length)];
-
-
-function randomColor() {
-    return '#' + Math.floor(Math.random()*0xffffff).toString(16);
-}
+var score = 0;
 
 
 var bricks = [];
@@ -55,6 +47,15 @@ function keyUpHandler(e) {
     leftPressed = false;
   }
 }
+
+document.addEventListener("mousemove", mouseMoveHandler, false);
+function mouseMoveHandler(e) {
+    var relativeX = e.clientX - canvas.offsetLeft;
+    if(relativeX > 0 && relativeX < canvas.width) {
+        paddleX = relativeX - paddleWidth/2;
+    }
+}
+
 function collisionDetection() {
   for(var c=0; c<brickColumnCount; c++) {
     for(var r=0; r<brickRowCount; r++) {
@@ -63,10 +64,22 @@ function collisionDetection() {
         if(x > b.x && x < b.x+brickWidth && y > b.y && y < b.y+brickHeight) {
           dy = -dy;
           b.status = 0;
+          score++;
+          if(score == brickRowCount*brickColumnCount) {
+              alert("You win! Congratulations!");
+              document.location.reload();
+              clearInterval(interval);
+          }
         }
       }
     }
   }
+}
+
+function drawScore() {
+    ctx.font = "16px Arial";
+    ctx.fillStyle = "#0095DD";
+    ctx.fillText("Score: "+score, 8, 20);
 }
 
 function drawBall() {
@@ -85,7 +98,7 @@ function drawPaddle() {
 }
 function drawBricks() {
   for(var c=0; c<brickColumnCount; c++) {
-    ctx.fillStyle = randomColor();
+    ctx.fillStyle = '#' + Math.floor(Math.random()*0xffffff).toString(16);
     for(var r=0; r<brickRowCount; r++) {
       if(bricks[c][r].status == 1) {
         var brickX = (r*(brickWidth+brickPadding))+brickOffsetLeft;
@@ -94,7 +107,8 @@ function drawBricks() {
         bricks[c][r].y = brickY;
         ctx.beginPath();
         ctx.rect(brickX, brickY, brickWidth, brickHeight);
-        // ctx.fillStyle = randomColor();
+        // ctx.fillStyle = randomColor();  //  for every color different (but random)
+ 
         ctx.fill();
         ctx.closePath();
       }
@@ -107,6 +121,7 @@ function draw() {
   drawBricks();
   drawBall();
   drawPaddle();
+  drawScore();
   collisionDetection();
 
   if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
