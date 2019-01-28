@@ -11,37 +11,6 @@ var paddleX = (canvas.width-paddleWidth)/2;
 var rightPressed = false;
 var leftPressed = false;
 
-function drawPaddle(){
-    ctx.beginPath();
-    ctx.rect(paddleX, canvas.height-paddleHeight,paddleWidth, paddleHeight);
-    ctx.fillStyle = "#0095DD";
-    ctx.fill();
-    ctx.closePath();
-}
-
-function drawBall() {
-    ctx.beginPath();
-    ctx.arc(x, y, ballRadius, 0, Math.PI*2);
-    ctx.fillStyle = "#0095DD";
-    ctx.fill();
-    ctx.closePath();
-}
-
-function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawBall();
-    
-    if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
-        dx = -dx;
-    }
-    if(y + dy > canvas.height-ballRadius || y + dy < ballRadius) {
-        dy = -dy;
-    }
-    
-    x += dx;
-    y += dy;
-}
-
 document.addEventListener("keydown", keyDownHandler, false);
 document.addEventListener("keyup", keyUpHandler, false);
 
@@ -49,7 +18,7 @@ function keyDownHandler(e) {
     if(e.key == "Right" || e.key == "ArrowRight") {
         rightPressed = true;
     }
-    else if(e.key == "Left" || e.key =="ArrowLeft") {
+    else if(e.key == "Left" || e.key == "ArrowLeft") {
         leftPressed = true;
     }
 }
@@ -63,10 +32,52 @@ function keyUpHandler(e) {
     }
 }
 
-if(rightPressed) {
-    paddleX += 7;
+function drawBall() {
+    ctx.beginPath();
+    ctx.arc(x, y, ballRadius, 0, Math.PI*2);
+    ctx.fillStyle = "#0095DD";
+    ctx.fill();
+    ctx.closePath();
 }
-else if(leftPressed) {
-    paddleX -= 7;
+function drawPaddle() {
+    ctx.beginPath();
+    ctx.rect(paddleX, canvas.height-paddleHeight, paddleWidth, paddleHeight);
+    ctx.fillStyle = "#0095DD";
+    ctx.fill();
+    ctx.closePath();
 }
-setInterval(draw, 10);
+
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawBall();
+    drawPaddle();
+    
+    if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
+        dx = -dx;
+    }
+    if(y + dy < ballRadius) {
+        dy = -dy;
+    }
+    else if(y + dy > canvas.height-ballRadius) {
+        if(x > paddleX && x < paddleX + paddleWidth) {
+            dy = -dy;
+        }
+        else {
+            alert("GAME OVER");
+            document.location.reload();
+            clearInterval(interval); // Needed for Chrome to end game
+        }
+    }
+    
+    if(rightPressed && paddleX < canvas.width-paddleWidth) {
+        paddleX += 7;
+    }
+    else if(leftPressed && paddleX > 0) {
+        paddleX -= 7;
+    }
+    
+    x += dx;
+    y += dy;
+}
+
+var interval = setInterval(draw, 10);
